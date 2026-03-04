@@ -108,7 +108,7 @@ export default function Dashboard() {
   }
 
   function getOutcomeBadge(outcome: string) {
-    const styles = {
+    const styles: Record<string, string> = {
       appointment_booked: 'bg-green-100 text-green-800',
       lead_captured: 'bg-blue-100 text-blue-800',
       voicemail: 'bg-gray-100 text-gray-800',
