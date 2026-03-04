@@ -29,8 +29,6 @@ create table if not exists clients (
   -- Subscription
   plan text default 'starter', -- starter, growth, pro
   status text default 'active', -- active, paused, cancelled
-  monthly_minutes integer default 100,
-  price_per_month decimal(10,2) default 297.00,
   
   -- Settings
   timezone text default 'America/New_York',

@@ -50,7 +50,6 @@ interface ClientInfo {
   business_name: string;
   email: string;
   plan: string;
-  monthly_minutes: number;
   vapi_assistant_id: string;
   vapi_phone_number: string;
 }
@@ -86,7 +85,7 @@ export default function Dashboard() {
       // Fetch client info
       const { data: clientData } = await supabase
         .from('clients')
-        .select('business_name, email, plan, monthly_minutes, vapi_assistant_id, vapi_phone_number')
+        .select('business_name, email, plan, vapi_assistant_id, vapi_phone_number')
         .eq('id', clientId)
         .single();
 
@@ -209,9 +208,8 @@ export default function Dashboard() {
                   {clientInfo?.business_name || 'BIZ AI Dashboard'}
                 </h1>
                 <p className="text-sm text-gray-500">
-                  {clientInfo?.plan === 'starter' ? 'Starter Plan' : 
-                   clientInfo?.plan === 'growth' ? 'Growth Plan' : 'Pro Plan'} • 
-                  {clientInfo?.monthly_minutes || 100} mins/month
+                  {clientInfo?.plan === 'starter' ? 'Starter Plan' :
+                   clientInfo?.plan === 'growth' ? 'Growth Plan' : 'Pro Plan'}
                   {clientInfo?.vapi_phone_number && (
                     <span className="ml-2 text-blue-600">
                       • AI: {clientInfo.vapi_phone_number}

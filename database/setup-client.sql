@@ -14,8 +14,6 @@ INSERT INTO clients (
   vapi_phone_number,   -- The phone number assigned to this VAPI assistant
   plan,
   status,
-  monthly_minutes,
-  price_per_month,
   timezone,
   sms_notifications_enabled
 ) VALUES (
@@ -28,8 +26,6 @@ INSERT INTO clients (
   '+15559876543',               -- VAPI Phone Number assigned to this client
   'starter',                    -- Plan: starter, growth, or pro
   'active',                     -- Status: active, paused, cancelled
-  500,                          -- Monthly minutes included
-  297.00,                       -- Price per month
   'America/New_York',           -- Timezone
   true                          -- Enable SMS notifications
 );
