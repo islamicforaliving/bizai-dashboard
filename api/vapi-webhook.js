@@ -22,10 +22,36 @@ module.exports = async (req, res) => {
     const payload = req.body;
     console.log('Vapi webhook received:', JSON.stringify(payload, null, 2));
 
+    // Get VAPI assistant ID from the webhook
+    const vapiAssistantId = payload.assistant?.id || payload.call?.assistantId;
+    
+    // Find client by VAPI assistant ID
+    let clientId = payload.assistant?.metadata?.client_id;
+    
+    // If no client_id in metadata, look up by vapi_assistant_id
+    if (!clientId && vapiAssistantId) {
+      const { data: client } = await supabase
+        .from('clients')
+        .select('id, notification_phone, vapi_assistant_id')
+        .eq('vapi_assistant_id', vapiAssistantId)
+        .single();
+      
+      if (client) {
+        clientId = client.id;
+        console.log('Found client by VAPI assistant ID:', clientId);
+      }
+    }
+    
+    // Default to 'default' if no client found
+    if (!clientId) {
+      clientId = 'default';
+      console.log('No client found, using default');
+    }
+
     // Extract call data
     const callData = {
       vapi_call_id: payload.call?.id || payload.id,
-      client_id: payload.assistant?.metadata?.client_id || 'default',
+      client_id: clientId,
       phone_number: payload.call?.customer?.number || payload.customer?.number,
       start_time: payload.call?.startedAt || payload.startedAt,
       end_time: payload.call?.endedAt || payload.endedAt,
@@ -77,16 +103,17 @@ async function getClientPhoneNumber(clientId) {
   try {
     const { data, error } = await supabase
       .from('clients')
-      .select('phone')
+      .select('notification_phone, phone')
       .eq('id', clientId)
       .single();
     
     if (error) {
-      // Try to get from environment as fallback
+      console.log('Error fetching client, using default phone');
       return process.env.DEFAULT_CLIENT_PHONE;
     }
     
-    return data?.phone || process.env.DEFAULT_CLIENT_PHONE;
+    // Use notification_phone if available, otherwise fall back to phone
+    return data?.notification_phone || data?.phone || process.env.DEFAULT_CLIENT_PHONE;
   } catch (error) {
     console.error('Error fetching client phone:', error);
     return process.env.DEFAULT_CLIENT_PHONE;
