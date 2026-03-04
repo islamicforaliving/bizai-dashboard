@@ -109,7 +109,7 @@ export function quickLeadScore(transcript: string): number {
 
 // Generate follow-up message based on outcome
 export function generateFollowUp(outcome: string, transcript: string): string {
-  const messages = {
+  const messages: Record<string, string> = {
     appointment_booked: 
       "Thanks for booking with us! We'll see you at the scheduled time. Reply CONFIRM to confirm or RESCHEDULE if you need to change.",
     
