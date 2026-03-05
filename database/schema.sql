@@ -28,7 +28,7 @@ create table if not exists clients (
   
   -- Subscription
   plan text default 'starter', -- starter, growth, pro
-  status text default 'active', -- active, paused, cancelled
+  status text default 'pending', -- pending, active, paused, cancelled
   
   -- Settings
   timezone text default 'America/New_York',
@@ -178,11 +178,11 @@ create index if not exists idx_calls_lead_score on calls(lead_score);
 create index if not exists idx_daily_summaries_client_date on daily_summaries(client_id, date);
 
 -- RLS Policies (security)
--- Clients can only see their own data
+-- Clients can only see their own data (only active clients can see calls)
 create policy "Clients can view own calls"
   on calls for select
   using (client_id in (
-    select id from clients where email = auth.email()
+    select id from clients where email = auth.email() and status = 'active'
   ));
 
 create policy "Clients can view own daily summaries"
